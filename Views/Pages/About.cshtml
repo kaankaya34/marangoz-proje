@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Hakkımızda";
+    var site = SiteOpt.Value;
+}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-3">Atölyemiz</h1>
+            <div class="wood-card p-4 p-md-5">
+                <p class="lead">@site.Name; masa, sandalye, tabure ve sallanan sandalye gibi mobilyaları kendi atölyesinde, doğal ahşaptan ve el işçiliğiyle üretir.</p>
+                <p>Her parça, mekânınızın ölçüsüne ve kullanım alışkanlıklarınıza göre planlanır. Ahşabı seçerken damar yapısına, kuruluk oranına ve kullanım yerine bakarız; yüzey işlemlerini ise ürünün ömrünü uzatacak şekilde mat, yağ veya lake seçeneklerinden birini birlikte belirleyerek yaparız.</p>
+                <h5 class="mt-4">Nasıl çalışıyoruz?</h5>
+                <ol>
+                    <li><strong>Talep:</strong> İhtiyacınızı, ölçüleri ve varsa referans fotoğrafları teklif formuyla iletirsiniz.</li>
+                    <li><strong>Teklif:</strong> Atölye net fiyatı, tahmini teslim tarihini ve notlarını size bildirir; onaylar, revize ister veya reddedersiniz.</li>
+                    <li><strong>Üretim:</strong> Kesim, montaj ve cila aşamalarını profilinizden ve atölye fotoğraflarıyla takip edersiniz.</li>
+                    <li><strong>Teslim:</strong> Ürün teslim edilir, bakım önerileri paylaşılır.</li>
+                </ol>
+                <a asp-controller="Quotes" asp-action="Create" class="btn btn-wood">Teklif İste</a>
+                <a asp-action="Contact" class="btn btn-outline-wood">İletişim</a>
+            </div>
+        </div>
+    </div>
+</div>

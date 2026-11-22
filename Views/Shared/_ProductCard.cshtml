@@ -1,0 +1,28 @@
+@model Product
+@{
+    var p = Model;
+}
+<div class="wood-card product-card">
+    <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id" class="d-block thumb" aria-label="@p.Name">
+        @if (!string.IsNullOrEmpty(p.Category?.Name))
+        {
+            <span class="cat-pill">@p.Category.Name</span>
+        }
+        @if (!string.IsNullOrEmpty(p.ImageUrl))
+        {
+            <img src="@p.ImageUrl" alt="@p.Name" loading="lazy" />
+        }
+        else
+        {
+            <svg class="i"><use href="#i-chair" /></svg>
+        }
+    </a>
+    <div class="p-3">
+        <h5 class="card-title mb-2"><a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id">@p.Name</a></h5>
+        <p class="small text-muted mb-2">@(p.Description.Length > 90 ? p.Description[..90] + "…" : p.Description)</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="price">@(p.Price.HasValue ? p.Price.Value.ToString("N0") + " ₺'den" : "Fiyat için teklif alın")</span>
+            <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-outline-wood">İncele</a>
+        </div>
+    </div>
+</div>

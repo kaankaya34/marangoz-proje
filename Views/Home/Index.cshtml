@@ -1,0 +1,168 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Ana Sayfa";
+    var isAuth = User.Identity?.IsAuthenticated == true;
+    string Icon(string name) => name.ToLower(System.Globalization.CultureInfo.GetCultureInfo("tr-TR")) switch
+    {
+        var n when n.Contains("sallanan") => "i-rocker",
+        var n when n.Contains("sandalye") => "i-chair",
+        var n when n.Contains("tabure") => "i-stool",
+        var n when n.Contains("masa") => "i-table",
+        _ => "i-tree"
+    };
+}
+
+<section class="hero">
+    <div class="hero-rings" aria-hidden="true">
+        <svg viewBox="0 0 400 400">
+            <defs>
+                <radialGradient id="core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#E4BE8A" /><stop offset="1" stop-color="#B98650" /></radialGradient>
+            </defs>
+            <circle cx="200" cy="200" r="196" fill="#4A3426" />
+            <circle cx="200" cy="200" r="188" fill="none" stroke="#5E4332" stroke-width="6" stroke-dasharray="3 5" />
+            <circle cx="200" cy="200" r="178" fill="url(#core)" />
+            <g fill="none" stroke="#8F6A3C" stroke-opacity=".7">
+                <ellipse class="ring" cx="200" cy="200" rx="164" ry="161" stroke-width="2.4" />
+                <ellipse class="ring" cx="201" cy="199" rx="146" ry="148" stroke-width="1.6" />
+                <ellipse class="ring" cx="199" cy="201" rx="128" ry="125" stroke-width="2.6" />
+                <ellipse class="ring" cx="201" cy="200" rx="110" ry="112" stroke-width="1.4" />
+                <ellipse class="ring" cx="200" cy="201" rx="93" ry="90" stroke-width="2.2" />
+                <ellipse class="ring" cx="199" cy="199" rx="76" ry="78" stroke-width="1.4" />
+                <ellipse class="ring" cx="200" cy="200" rx="58" ry="56" stroke-width="2.4" />
+                <ellipse class="ring" cx="201" cy="201" rx="40" ry="41" stroke-width="1.4" />
+                <ellipse class="ring" cx="200" cy="200" rx="22" ry="21" stroke-width="2" />
+            </g>
+            <path d="M200 200 L372 178" stroke="#6E4B2C" stroke-opacity=".55" stroke-width="3" stroke-linecap="round" />
+            <circle cx="200" cy="200" r="5" fill="#6E4B2C" />
+        </svg>
+    </div>
+    <svg class="i leaf-float" style="left: 8%; top: 6%" aria-hidden="true"><use href="#i-leaf" /></svg>
+    <svg class="i leaf-float" style="left: 38%; top: 2%" aria-hidden="true"><use href="#i-leaf" /></svg>
+    <svg class="i leaf-float" style="left: 62%; top: 10%" aria-hidden="true"><use href="#i-leaf" /></svg>
+    <div class="hero-trees-back" aria-hidden="true"></div>
+    <div class="hero-trees" aria-hidden="true"></div>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="eyebrow mb-3" data-reveal="up">Doğal · El İşçiliği · Size Özel</div>
+                <h1 class="mb-3" data-reveal="up" style="--d: 100ms">Ahşabın sıcaklığını <em>evinize</em> taşıyoruz</h1>
+                <p class="lead mb-4" data-reveal="up" style="--d: 200ms">Masa, sandalye, tabure ve sallanan sandalye... Her parça sizin ölçünüze göre, kendi atölyemizde tasarlanır ve üretilir.</p>
+                <div data-reveal="up" style="--d: 300ms">
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-wood btn-lg me-2 mb-2">Ürünleri Keşfet</a>
+                    <a asp-controller="Quotes" asp-action="Create" class="btn btn-outline-light btn-lg mb-2">Özel Ölçü Teklifi Al</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <section class="feature-strip">
+        <div class="row g-3">
+            <div class="col-6 col-lg-3" data-reveal="up"><div class="wood-card"><span class="f-ico"><svg class="i"><use href="#i-tree" /></svg></span><div><strong>Masif ahşap</strong><small>Seçilmiş kereste</small></div></div></div>
+            <div class="col-6 col-lg-3" data-reveal="up"><div class="wood-card"><span class="f-ico"><svg class="i"><use href="#i-hand" /></svg></span><div><strong>El işçiliği</strong><small>Kendi atölyemizde</small></div></div></div>
+            <div class="col-6 col-lg-3" data-reveal="up"><div class="wood-card"><span class="f-ico"><svg class="i"><use href="#i-ruler" /></svg></span><div><strong>Özel ölçü</strong><small>Mekâna göre üretim</small></div></div></div>
+            <div class="col-6 col-lg-3" data-reveal="up"><div class="wood-card"><span class="f-ico"><svg class="i"><use href="#i-track" /></svg></span><div><strong>Adım adım takip</strong><small>Profilinizden izleyin</small></div></div></div>
+        </div>
+    </section>
+
+    <section class="mt-5 pt-3">
+        <h2 class="section-title" data-reveal="up">Kategoriler</h2>
+        <div class="row g-3">
+            @foreach (var c in Model.Categories)
+            {
+                <div class="col-6 col-md-3" data-reveal="zoom">
+                    <a class="wood-card category-tile" asp-controller="Products" asp-action="Index" asp-route-categoryId="@c.Id">
+                        <div class="disc"><svg class="i"><use href="#@Icon(c.Name)" /></svg></div>
+                        <h5 class="mb-1">@c.Name</h5>
+                        <div class="small text-muted">@c.Products.Count ürün</div>
+                    </a>
+                </div>
+            }
+            @if (!Model.Categories.Any())
+            {
+                <p class="text-muted">Henüz kategori eklenmedi.</p>
+            }
+        </div>
+    </section>
+
+    <section class="mt-5">
+        <div class="d-flex justify-content-between align-items-end">
+            <h2 class="section-title" data-reveal="up">Yeni Eklenenler</h2>
+            <a asp-controller="Products" asp-action="Index" class="mb-3">Tümünü gör →</a>
+        </div>
+        <div class="row g-4">
+            @foreach (var p in Model.LatestProducts)
+            {
+                <div class="col-12 col-sm-6 col-lg-4" data-reveal="up"><partial name="_ProductCard" model="p" /></div>
+            }
+            @if (!Model.LatestProducts.Any())
+            {
+                <p class="text-muted">Henüz ürün eklenmedi.</p>
+            }
+        </div>
+    </section>
+
+    <section class="mt-5 pt-4 trunk-section">
+        <div class="text-center" data-reveal="up">
+            <span class="eyebrow-dark">Fidandan mobilyaya</span>
+            <h2 class="section-title">Bir mobilya nasıl büyür?</h2>
+        </div>
+        <div class="trunk" id="trunk">
+            <div class="branch" data-reveal="left">
+                <span class="node"><span>1</span></span>
+                <div class="wood-card"><h5>Talep</h5><p>İhtiyacınızı, ölçüleri ve varsa referans fotoğrafları teklif formuyla iletirsiniz.</p></div>
+            </div>
+            <div class="branch" data-reveal="right">
+                <span class="node"><span>2</span></span>
+                <div class="wood-card"><h5>Teklif</h5><p>Atölye net fiyatı ve tahmini teslim tarihini bildirir; onaylar veya revize istersiniz.</p></div>
+            </div>
+            <div class="branch" data-reveal="left">
+                <span class="node"><span>3</span></span>
+                <div class="wood-card"><h5>Üretim</h5><p>Kesim, montaj ve cila aşamalarını atölye fotoğraflarıyla profilinizden takip edersiniz.</p></div>
+            </div>
+            <div class="branch" data-reveal="right">
+                <span class="node"><span>4</span></span>
+                <div class="wood-card"><h5>Teslim</h5><p>Ürününüz teslim edilir, ömrünü uzatacak bakım önerileri paylaşılır.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-5 pt-4">
+        <div class="text-center" data-reveal="up">
+            <span class="eyebrow-dark">Kökeni belli, damarı özel</span>
+            <h2 class="section-title">Ahşabımızı tanıyın</h2>
+        </div>
+        <div class="row g-3 mt-1">
+            <div class="col-6 col-lg-3" data-reveal="up"><div class="wood-card wood-kind"><div class="ring-disc disc-oak"></div><h5>Meşe</h5><p>Sert, dayanıklı ve belirgin damarlı.</p></div></div>
+            <div class="col-6 col-lg-3" data-reveal="up"><div class="wood-card wood-kind"><div class="ring-disc disc-walnut"></div><h5>Ceviz</h5><p>Koyu ve zarif; yağ cila ile derinleşir.</p></div></div>
+            <div class="col-6 col-lg-3" data-reveal="up"><div class="wood-card wood-kind"><div class="ring-disc disc-beech"></div><h5>Kayın</h5><p>Açık tonlu, ince ve düzgün dokulu.</p></div></div>
+            <div class="col-6 col-lg-3" data-reveal="up"><div class="wood-card wood-kind"><div class="ring-disc disc-cherry"></div><h5>Kiraz</h5><p>Zamanla koyulaşan sıcak kızıl ton.</p></div></div>
+        </div>
+        <div class="text-center mt-3" data-reveal="up"><a asp-controller="Pages" asp-action="WoodGuide">Ahşap ve cila rehberini okuyun →</a></div>
+    </section>
+
+    <section class="mt-5 pt-4">
+        <div class="cta-band" data-reveal="zoom">
+            <div class="row align-items-center g-4">
+                <div class="col-md-7">
+                    <h2>Hayalinizdeki mobilyayı birlikte üretelim</h2>
+                    <p class="mb-0">Ölçünüzü, ahşap türünüzü ve yüzey tercihinizi yazın; talebiniz kategorize edilip ekibimize ulaşsın, size dönelim. Süreci profilinizden adım adım takip edin.</p>
+                </div>
+                <div class="col-md-5">
+                    @if (isAuth)
+                    {
+                        <div class="phone-box mb-3"><svg class="i"><use href="#i-phone" /></svg> Sipariş Hattı: <strong>@SiteOpt.Value.OrderPhone</strong></div>
+                        <a asp-controller="Quotes" asp-action="Create" class="btn btn-wood">Teklif Talebi Oluştur</a>
+                    }
+                    else
+                    {
+                        <div class="phone-box mb-3"><svg class="i"><use href="#i-lock" /></svg> Sipariş telefonunu görmek ve teklif talebi oluşturmak için üye olun.</div>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-wood me-2">Kayıt Ol</a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-wood">Giriş Yap</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Ahşap ve Cila Rehberi";
+    var woods = new (string Name, string Desc)[]
+    {
+        ("Meşe", "Sert ve dayanıklı, belirgin damarlı. Yemek masaları ve yoğun kullanılan mobilyalar için idealdir."),
+        ("Ceviz", "Koyu, zengin tonlu ve işlenmesi keyifli. Şık, uzun ömürlü parçalar için tercih edilir."),
+        ("Kayın", "Homojen, açık renkli ve sağlam. Sandalye ve tabure iskeletleri için yaygındır."),
+        ("Çam", "Hafif, ekonomik ve sıcak görünümlü. Rustik ürünlerde ve iç mekân mobilyalarında kullanılır."),
+        ("İroko", "Neme dayanıklı, altın-kahve tonlu. Balkon, bahçe ve mutfak ürünleri için uygundur.")
+    };
+    var finishes = new (string Name, string Desc)[]
+    {
+        ("Mat vernik", "Doğal ve sade görünüm, parmak izi az belli olur."),
+        ("Parlak vernik", "Derin ve cam gibi yüzey; lekeye karşı yüksek koruma."),
+        ("Yağ cila", "Ahşabın dokusunu öne çıkarır, zamanla yenilenebilir."),
+        ("Lake / boya", "Renk seçeneği çoktur; modern ve düz yüzeyler için uygundur.")
+    };
+}
+<div class="container py-5">
+    <h1 class="mb-1">Ahşap ve Cila Rehberi</h1>
+    <p class="text-muted mb-4">Teklif formunda ahşap türü ve yüzey tercihinizi belirtirseniz daha doğru teklif alırsınız.</p>
+
+    <h3 class="section-title">Ahşap Türleri</h3>
+    <div class="row g-3 mb-5">
+        @foreach (var w in woods)
+        {
+            <div class="col-12 col-md-6 col-lg-4"><div class="wood-card p-3 h-100"><h5>@w.Name</h5><p class="small mb-0">@w.Desc</p></div></div>
+        }
+    </div>
+
+    <h3 class="section-title">Yüzey İşlemleri</h3>
+    <div class="row g-3">
+        @foreach (var f in finishes)
+        {
+            <div class="col-12 col-md-6 col-lg-3"><div class="wood-card p-3 h-100"><h5>@f.Name</h5><p class="small mb-0">@f.Desc</p></div></div>
+        }
+    </div>
+
+    <div class="mt-5"><a asp-controller="Quotes" asp-action="Create" class="btn btn-wood">Seçimimle Teklif İste</a></div>
+</div>

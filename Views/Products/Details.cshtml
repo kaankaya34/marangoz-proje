@@ -1,0 +1,110 @@
+@model Product
+@{
+    ViewData["Title"] = Model.Name;
+    var isAuth = User.Identity?.IsAuthenticated == true;
+    var related = (List<Product>)ViewBag.Related;
+    var gallery = new List<string>();
+    if (!string.IsNullOrEmpty(Model.ImageUrl)) gallery.Add(Model.ImageUrl);
+    gallery.AddRange(Model.Images.OrderBy(i => i.SortOrder).ThenBy(i => i.Id).Select(i => i.Url));
+    ViewData["OgTitle"] = Model.Name;
+    ViewData["OgType"] = "product";
+    ViewData["OgDescription"] = Model.Description.Length > 160 ? Model.Description[..160] + "…" : Model.Description;
+    if (gallery.Count > 0) ViewData["OgImage"] = gallery[0];
+    var waDigits = SiteOpt.Value.WhatsAppDigits;
+    var productUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
+    var waLink = waDigits is null ? null : $"https://wa.me/{waDigits}?text={Uri.EscapeDataString($"Merhaba, '{Model.Name}' ürünü hakkında bilgi almak istiyorum: {productUrl}")}";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Ürünler</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-categoryId="@Model.CategoryId">@Model.Category?.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="wood-card overflow-hidden">
+                <div class="thumb-lg" style="aspect-ratio: 1 / 1;">
+                    @if (gallery.Count > 0)
+                    {
+                        <img id="gallery-main" src="@gallery[0]" alt="@Model.Name" data-lightbox style="cursor: zoom-in" />
+                    }
+                    else
+                    {
+                        <svg class="i" style="width:6rem;height:6rem"><use href="#i-chair" /></svg>
+                    }
+                </div>
+            </div>
+            @if (gallery.Count > 1)
+            {
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    @for (var gi = 0; gi < gallery.Count; gi++)
+                    {
+                        <a href="@gallery[gi]" data-gallery-thumb="@gallery[gi]" class="d-block @(gi == 0 ? "active" : "")" aria-label="Görsel @(gi + 1)">
+                            <img src="@gallery[gi]" alt="@Model.Name görsel @(gi + 1)" loading="lazy" style="width:80px;height:80px;object-fit:cover;border-radius:8px" />
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+        <div class="col-lg-6">
+            <div class="small text-muted">@Model.Category?.Name</div>
+            <h1 class="mb-3">@Model.Name</h1>
+            <div class="price fs-3 mb-3">@(Model.Price.HasValue ? Model.Price.Value.ToString("N0") + " ₺'den başlayan fiyatlarla" : "Fiyat için teklif alın")</div>
+            <p style="white-space: pre-line">@Model.Description</p>
+
+            <table class="table table-sm w-auto">
+                <tbody>
+                    @if (!string.IsNullOrWhiteSpace(Model.Material)) { <tr><th class="pe-4">Ahşap Türü</th><td>@Model.Material</td></tr> }
+                    @if (!string.IsNullOrWhiteSpace(Model.Dimensions)) { <tr><th class="pe-4">Ölçüler</th><td>@Model.Dimensions</td></tr> }
+                    <tr><th class="pe-4">Kategori</th><td>@Model.Category?.Name</td></tr>
+                </tbody>
+            </table>
+
+            <div class="phone-box my-3">
+                @if (isAuth)
+                {
+                    <div><svg class="i"><use href="#i-phone" /></svg> Sipariş hattı: <a href="tel:@(SiteOpt.Value.OrderPhone.Replace(" ", ""))"><strong>@SiteOpt.Value.OrderPhone</strong></a></div>
+                }
+                else
+                {
+                    <div><svg class="i"><use href="#i-lock" /></svg> Sipariş telefonunu görmek için <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@(Context.Request.Path)">giriş yapın</a> veya <a asp-controller="Account" asp-action="Register">kayıt olun</a>.</div>
+                }
+            </div>
+
+            <a asp-controller="Quotes" asp-action="Create" asp-route-productId="@Model.Id" class="btn btn-wood btn-lg">Bu Ürün İçin Teklif / Özel Ölçü İste</a>
+            @if (isAuth && waLink is not null)
+            {
+                <a href="@waLink" target="_blank" rel="noopener noreferrer" class="btn btn-outline-wood btn-lg ms-lg-2 mt-2 mt-lg-0">WhatsApp'tan Sor</a>
+            }
+            @if (!isAuth)
+            {
+                <div class="small text-muted mt-2">Teklif talebi için giriş yapmanız gerekir.</div>
+            }
+        </div>
+    </div>
+
+    @if (related.Any())
+    {
+        <h3 class="section-title mt-5">Benzer Ürünler</h3>
+        <div class="row g-4">
+            @foreach (var p in related)
+            {
+                <div class="col-12 col-sm-6 col-lg-4"><partial name="_ProductCard" model="p" /></div>
+            }
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="lightbox" tabindex="-1" aria-label="Büyük görsel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0">
+            <button type="button" class="btn-close btn-close-white ms-auto mb-2" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            <img id="lightbox-img" src="" alt="@Model.Name" class="img-fluid rounded" />
+        </div>
+    </div>
+</div>

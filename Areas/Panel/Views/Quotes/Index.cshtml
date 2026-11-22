@@ -1,0 +1,58 @@
+@model QuoteListViewModel
+@{
+    ViewData["Title"] = "Teklifler / Siparişler";
+    string? PageUrl(int p) => Url.Action("Index", "Quotes", new { area = "Panel", status = Model.Status, q = Model.Query, page = p });
+}
+<h1 class="mb-3">Teklifler / Siparişler</h1>
+
+<form method="get" class="wood-card p-3 mb-3">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <input class="form-control" name="q" value="@Model.Query" placeholder="Başlık, müşteri adı veya e-posta ara..." />
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" name="status">
+                <option value="">Tüm durumlar</option>
+                @foreach (var s in Enum.GetValues<QuoteStatus>())
+                {
+                    <option value="@((int)s)" selected="@(Model.Status == s)">@s.Icon() @s.Label()</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-grid"><button class="btn btn-dark-wood">Filtrele</button></div>
+    </div>
+</form>
+
+<div class="small text-muted mb-2">Durum butonları: @foreach (var s in Enum.GetValues<QuoteStatus>()) { <span class="me-2">@s.Icon() @s.Label()</span> }</div>
+
+<div class="wood-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>#</th><th>Talep</th><th>Müşteri</th><th>Ön Analiz</th><th>Durum</th><th>Tek Tıkla Güncelle</th></tr></thead>
+            <tbody>
+                @foreach (var q in Model.Items)
+                {
+                    <tr>
+                        <td>@q.Id</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@q.Id" class="fw-semibold">@q.Title</a>
+                            <div class="small text-muted">@q.CreatedAt.ToTrString()</div>
+                        </td>
+                        <td>@q.User?.FullName<div class="small text-muted">@q.User?.Email</div></td>
+                        <td class="small">
+                            @if (q.AiCategory is not null)
+                            {
+                                <span class="ai-chip">@q.AiCategory</span>
+                                <div class="@(q.AiPriority == "Yüksek" ? "text-danger fw-semibold" : "text-muted")">Öncelik: @q.AiPriority</div>
+                            }
+                        </td>
+                        <td><partial name="_StatusBadge" model="q.Status" /></td>
+                        <td><partial name="_StatusButtons" model="q" /></td>
+                    </tr>
+                }
+                @if (!Model.Items.Any()) { <tr><td colspan="6" class="text-center text-muted py-4">Kayıt bulunamadı.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>
+<partial name="_Pager" model="(Model.Page, Model.TotalPages, (Func<int, string?>)PageUrl)" />

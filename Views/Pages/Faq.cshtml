@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Sık Sorulan Sorular";
+    var items = new (string Q, string A)[]
+    {
+        ("Teslimat süresi ne kadar?", "Ürünün ölçüsüne ve iş yoğunluğuna göre değişir. Teklifinizle birlikte tahmini teslim tarihi bildirilir ve üretim aşamalarını profilinizden takip edebilirsiniz."),
+        ("Montaj ve nakliye yapıyor musunuz?", "Evet. Montaj ve nakliye koşulları teklif aşamasında adresinize göre netleştirilir."),
+        ("Kapora alıyor musunuz?", "Özel ölçü üretimlerde teklif onayından sonra üretime başlamak için kapora talep edilebilir; tutar teklifte belirtilir."),
+        ("Özel ölçü ve renk seçebilir miyim?", "Evet. Teklif formuna ölçüleri, ahşap türünü, yüzey tercihini ve varsa referans fotoğraf veya ölçü krokinizi ekleyebilirsiniz."),
+        ("Hangi ahşap türünü seçmeliyim?", "Ahşap Rehberi sayfasında yaygın türlerin özelliklerini ve yüzey işlemlerini bulabilirsiniz."),
+        ("Ürün bakımı nasıl yapılır?", "Doğrudan güneş ışığından ve nemden koruyun, nemli bezle silin, yağ cilalı yüzeyleri yılda bir kez yenileyin."),
+        ("Teklifimi iptal edebilir miyim?", "İnceleme aşamasındaki talepleri profilinizden iptal edebilirsiniz. Sonraki aşamalarda atölye ile iletişime geçin.")
+    };
+}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-3">Sık Sorulan Sorular</h1>
+            <div class="accordion" id="faq">
+                @for (var i = 0; i < items.Length; i++)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button @(i == 0 ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#faq-@i" aria-expanded="@(i == 0 ? "true" : "false")" aria-controls="faq-@i">@items[i].Q</button>
+                        </h2>
+                        <div id="faq-@i" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#faq">
+                            <div class="accordion-body">@items[i].A</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

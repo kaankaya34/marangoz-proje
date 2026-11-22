@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F9F3E6"/><stop offset="1" stop-color="#E9DAC0"/></linearGradient>
+<linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C99B62"/><stop offset="1" stop-color="#8F6A3C"/></linearGradient>
+<linearGradient id="wd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8F6A3C"/><stop offset="1" stop-color="#C99B62" stop-opacity=".55"/></linearGradient>
+<radialGradient id="sh"><stop offset="0" stop-color="#2C221E" stop-opacity=".35"/><stop offset="1" stop-color="#2C221E" stop-opacity="0"/></radialGradient>
+<filter id="g" x="0" y="0" width="100%" height="100%">
+<feTurbulence type="fractalNoise" baseFrequency="0.012 0.22" numOctaves="3" seed="9" result="n"/>
+<feColorMatrix in="n" type="matrix" values="0 0 0 0 0.22 0 0 0 0 0.12 0 0 0 0 0.05 0 0 0 -1.6 1.0" result="t"/>
+<feComposite in="t" in2="SourceAlpha" operator="in" result="tc"/>
+<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="tc"/></feMerge>
+</filter>
+</defs>
+<rect width="800" height="600" fill="url(#bg)"/>
+<circle cx="690" cy="110" r="30" fill="none" stroke="#C9B391" stroke-opacity=".35" stroke-width="2"/><circle cx="690" cy="110" r="52" fill="none" stroke="#C9B391" stroke-opacity=".35" stroke-width="2"/><circle cx="690" cy="110" r="74" fill="none" stroke="#C9B391" stroke-opacity=".35" stroke-width="2"/><circle cx="690" cy="110" r="96" fill="none" stroke="#C9B391" stroke-opacity=".35" stroke-width="2"/><circle cx="690" cy="110" r="118" fill="none" stroke="#C9B391" stroke-opacity=".35" stroke-width="2"/><circle cx="690" cy="110" r="140" fill="none" stroke="#C9B391" stroke-opacity=".35" stroke-width="2"/><circle cx="690" cy="110" r="162" fill="none" stroke="#C9B391" stroke-opacity=".35" stroke-width="2"/><circle cx="690" cy="110" r="184" fill="none" stroke="#C9B391" stroke-opacity=".35" stroke-width="2"/>
+<rect y="478" width="800" height="122" fill="#2C221E" fill-opacity=".06"/>
+<ellipse cx="400" cy="492" rx="260" ry="22" fill="url(#sh)"/>
+<g filter="url(#g)" stroke="#8F6A3C" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<polygon points="318,296 344,296 316,480 286,480" fill="url(#wd)"/><polygon points="456,296 482,296 514,480 484,480" fill="url(#wd)"/><rect x="306" y="390" width="188" height="12" rx="4" fill="url(#wd)"/><rect x="270" y="256" width="260" height="44" rx="20" fill="url(#w)"/>
+</g>
+</svg>

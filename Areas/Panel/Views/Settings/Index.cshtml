@@ -1,0 +1,54 @@
+@model SiteSetting
+@{
+    ViewData["Title"] = "Site Ayarları";
+}
+<h1 class="mb-3">Site Ayarları</h1>
+<div class="wood-card p-4" style="max-width: 800px">
+    <form asp-action="Index" method="post" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="OrderPhone" class="form-label"></label>
+                <input asp-for="OrderPhone" class="form-control" type="tel" />
+                <span asp-validation-for="OrderPhone" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="WhatsApp" class="form-label"></label>
+                <input asp-for="WhatsApp" class="form-control" type="tel" placeholder="05XX XXX XX XX" />
+                <span asp-validation-for="WhatsApp" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Address" class="form-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Instagram" class="form-label"></label>
+                <input asp-for="Instagram" class="form-control" placeholder="https://instagram.com/..." />
+                <span asp-validation-for="Instagram" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="MapUrl" class="form-label"></label>
+                <input asp-for="MapUrl" class="form-control" placeholder="https://maps.google.com/..." />
+                <span asp-validation-for="MapUrl" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="WorkingHours" class="form-label"></label>
+                <input asp-for="WorkingHours" class="form-control" placeholder="Hafta içi 09:00 - 18:00" />
+                <span asp-validation-for="WorkingHours" class="text-danger small"></span>
+            </div>
+        </div>
+        <button class="btn btn-wood mt-4" type="submit">Kaydet</button>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

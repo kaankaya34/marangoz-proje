@@ -1,0 +1,46 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Genel Bakış";
+}
+<h1 class="mb-4">Genel Bakış</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4"><div class="wood-card stat-card"><div class="small text-muted">Kullanıcı</div><div class="num">@Model.UserCount</div></div></div>
+    <div class="col-6 col-md-4"><div class="wood-card stat-card"><div class="small text-muted">Ürün</div><div class="num">@Model.ProductCount</div></div></div>
+    <div class="col-6 col-md-4"><div class="wood-card stat-card"><div class="small text-muted">Kategori</div><div class="num">@Model.CategoryCount</div></div></div>
+</div>
+
+<h5 class="mb-3">Teklif / Sipariş Durumları</h5>
+<div class="row g-3 mb-4">
+    @foreach (var kv in Model.QuoteCounts)
+    {
+        <div class="col-6 col-md-4 col-xl-2">
+            <a asp-controller="Quotes" asp-action="Index" asp-route-status="@kv.Key" class="wood-card stat-card d-block text-decoration-none">
+                <span class="status-badge @kv.Key.CssClass() mb-2">@kv.Key.Icon() @kv.Key.Label()</span>
+                <div class="num text-dark">@kv.Value</div>
+            </a>
+        </div>
+    }
+</div>
+
+<h5 class="mb-3">Son Talepler</h5>
+<div class="wood-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>#</th><th>Başlık</th><th>Müşteri</th><th>Tarih</th><th>Durum</th></tr></thead>
+            <tbody>
+                @foreach (var q in Model.RecentQuotes)
+                {
+                    <tr>
+                        <td>@q.Id</td>
+                        <td><a asp-controller="Quotes" asp-action="Details" asp-route-id="@q.Id">@q.Title</a></td>
+                        <td>@q.User?.FullName</td>
+                        <td class="text-nowrap">@q.CreatedAt.ToTrString()</td>
+                        <td><partial name="_StatusBadge" model="q.Status" /></td>
+                    </tr>
+                }
+                @if (!Model.RecentQuotes.Any()) { <tr><td colspan="5" class="text-center text-muted py-4">Henüz talep yok.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

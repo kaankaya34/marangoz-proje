@@ -1,0 +1,56 @@
+@model QuoteCreateViewModel
+@{
+    ViewData["Title"] = "Teklif / Özel Ölçü Talebi";
+}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-1">Teklif / Özel Ölçü Talebi</h1>
+            <p class="text-muted">İhtiyacınızı ne kadar detaylı anlatırsanız o kadar doğru teklif veririz. Talebiniz otomatik olarak analiz edilip kategorize edilir.</p>
+
+            <div class="wood-card p-4">
+                <form asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
+                    <input type="hidden" asp-for="ProductId" />
+                    @if (!string.IsNullOrEmpty(Model.ProductName))
+                    {
+                        <div class="alert alert-light border">İlgili ürün: <strong>@Model.ProductName</strong></div>
+                    }
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" placeholder="Örn: 8 kişilik meşe yemek masası" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="6" placeholder="Ahşap türü, renk/cila tercihi, kaç adet, ne zamana kadar istediğiniz gibi detayları yazın."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="CustomDimensions" class="form-label"></label>
+                            <input asp-for="CustomDimensions" class="form-control" placeholder="Örn: 200x100x75 cm" />
+                            <span asp-validation-for="CustomDimensions" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Budget" class="form-label"></label>
+                            <input asp-for="Budget" class="form-control" type="number" step="1" min="0" />
+                            <span asp-validation-for="Budget" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label asp-for="Attachments" class="form-label"></label>
+                        <input asp-for="Attachments" class="form-control" type="file" multiple accept="image/jpeg,image/png,image/webp" />
+                        <div class="form-text">Oda fotoğrafı, beğendiğiniz örnek veya ölçü krokisi (jpg, png, webp · her biri en fazla 5 MB).</div>
+                        <span asp-validation-for="Attachments" class="text-danger small"></span>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-wood btn-lg">Talebi Gönder</button>
+                        <a asp-controller="Account" asp-action="Profile" class="btn btn-outline-wood btn-lg">Vazgeç</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

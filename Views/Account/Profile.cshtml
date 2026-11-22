@@ -1,0 +1,79 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Profilim";
+    var u = Model.User;
+}
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>
+            <h1 class="mb-0">Merhaba, @u.FullName</h1>
+            <span class="text-muted">@Roles.DisplayName(u.Role) · @u.Email</span>
+        </div>
+        <a asp-controller="Quotes" asp-action="Create" class="btn btn-wood">+ Yeni Teklif / Özel Ölçü Talebi</a>
+    </div>
+
+    <ul class="nav nav-tabs nav-tabs-wood mb-4" role="tablist">
+        <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-quotes" type="button" role="tab">Taleplerim / Siparişlerim <span class="badge text-bg-secondary">@Model.Quotes.Count</span></button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-info" type="button" role="tab">Hesap Bilgilerim</button></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="tab-quotes" role="tabpanel">
+            @if (!Model.Quotes.Any())
+            {
+                <div class="wood-card p-5 text-center">
+                    <h4>Henüz talebiniz yok</h4>
+                    <p class="text-muted">Özel ölçü bir ürün için teklif talebi oluşturabilirsiniz.</p>
+                    <a asp-controller="Quotes" asp-action="Create" class="btn btn-wood">Teklif Talebi Oluştur</a>
+                </div>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var q in Model.Quotes)
+                    {
+                        <div class="col-12">
+                            <div class="wood-card p-3 p-md-4">
+                                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                                    <div>
+                                        <h5 class="mb-1"><a asp-controller="Quotes" asp-action="Details" asp-route-id="@q.Id">#@q.Id · @q.Title</a></h5>
+                                        <div class="small text-muted">@q.CreatedAt.ToTrString()@(q.Product is not null ? " · Ürün: " + q.Product.Name : "")</div>
+                                        @if (q.QuotedPrice.HasValue && q.Status != QuoteStatus.Cancelled)
+                                        {
+                                            <div class="small mt-1">💰 Teklif: <strong>@q.QuotedPrice.Value.ToString("N0") ₺</strong> · @q.CustomerResponse.Label()</div>
+                                        }
+                                    </div>
+                                    <partial name="_StatusBadge" model="q.Status" />
+                                </div>
+                                @if (q.Status != QuoteStatus.Cancelled)
+                                {
+                                    <div class="tracker mt-3">
+                                        @foreach (var s in new[] { QuoteStatus.Pending, QuoteStatus.Surveyed, QuoteStatus.InProduction, QuoteStatus.Finishing, QuoteStatus.Completed })
+                                        {
+                                            <div class="step @(s == q.Status ? "current" : (s < q.Status ? "done" : ""))">@s.Icon() @s.Label()</div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="tab-pane fade" id="tab-info" role="tabpanel">
+            <div class="wood-card p-4" style="max-width: 560px">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Ad Soyad</dt><dd class="col-sm-8">@u.FullName</dd>
+                    <dt class="col-sm-4">E-posta</dt><dd class="col-sm-8">@u.Email</dd>
+                    <dt class="col-sm-4">Telefon</dt><dd class="col-sm-8">@(u.Phone ?? "-")</dd>
+                    <dt class="col-sm-4">Üyelik</dt><dd class="col-sm-8">@u.CreatedAt.ToTrString()</dd>
+                </dl>
+                <div class="mt-3 d-flex gap-2 flex-wrap">
+                    <a asp-action="EditProfile" class="btn btn-sm btn-outline-wood">Profili Düzenle</a>
+                    <a asp-action="ChangePassword" class="btn btn-sm btn-outline-wood">Şifre Değiştir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

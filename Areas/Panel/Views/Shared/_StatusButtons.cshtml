@@ -1,0 +1,16 @@
+@model QuoteRequest
+@* Tek tıkla durum güncelleme butonları *@
+@{
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+<div class="d-inline-flex gap-1 flex-wrap" role="group" aria-label="Durum güncelle">
+    @foreach (var s in Enum.GetValues<QuoteStatus>())
+    {
+        <form asp-area="Panel" asp-controller="Quotes" asp-action="UpdateStatus" method="post" class="d-inline">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="status" value="@((int)s)" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <button type="submit" class="btn btn-sm @(s == Model.Status ? "btn-dark-wood" : "btn-outline-secondary")" title="@s.Label()" aria-label="@s.Label()" @(s == Model.Status ? "disabled" : "")>@s.Icon()</button>
+        </form>
+    }
+</div>

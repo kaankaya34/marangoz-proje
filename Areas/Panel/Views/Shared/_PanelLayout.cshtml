@@ -1,0 +1,31 @@
+@{
+    var isAdmin = User.IsInRole(Roles.Admin);
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
+    Layout = "/Views/Shared/_Layout.cshtml";
+    string Active(string c) => ctrl == c ? "active" : "";
+}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="panel-wrap">
+        <aside class="panel-side wood-card p-2">
+            <div class="px-3 py-2 small text-uppercase text-muted">@(isAdmin ? "Admin Paneli" : "Yönetici Paneli")</div>
+            <div class="list-group list-group-flush">
+                <a class="list-group-item @Active("Dashboard")" asp-area="Panel" asp-controller="Dashboard" asp-action="Index">📊 Genel Bakış</a>
+                <a class="list-group-item @Active("Quotes")" asp-area="Panel" asp-controller="Quotes" asp-action="Index">📨 Teklifler / Siparişler</a>
+                <a class="list-group-item @Active("Products")" asp-area="Panel" asp-controller="Products" asp-action="Index">🪑 Ürünler</a>
+                <a class="list-group-item @Active("Categories")" asp-area="Panel" asp-controller="Categories" asp-action="Index">🗂️ Kategoriler</a>
+                <a class="list-group-item @Active("Users")" asp-area="Panel" asp-controller="Users" asp-action="Index">👥 Kullanıcılar</a>
+                @if (isAdmin)
+                {
+                    <a class="list-group-item @Active("Settings")" asp-area="Panel" asp-controller="Settings" asp-action="Index">⚙️ Site Ayarları</a>
+                    <a class="list-group-item @Active("Logs")" asp-area="Panel" asp-controller="Logs" asp-action="Index">📜 Admin Log Sayfası</a>
+                }
+            </div>
+        </aside>
+        <section class="panel-main">
+            @RenderBody()
+        </section>
+    </div>
+</div>
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}

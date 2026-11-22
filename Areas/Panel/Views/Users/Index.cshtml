@@ -1,0 +1,55 @@
+@model UserListViewModel
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    var isAdmin = User.IsInRole(Roles.Admin);
+    var myId = User.GetUserId();
+    string? PageUrl(int p) => Url.Action("Index", "Users", new { area = "Panel", q = Model.Query, page = p });
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Kullanıcılar <span class="fs-6 text-muted">(@Model.TotalCount)</span></h1>
+    <a asp-action="Create" class="btn btn-wood">+ Kullanıcı Ekle</a>
+</div>
+
+<form method="get" class="wood-card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-9"><input class="form-control" name="q" value="@Model.Query" placeholder="Ad veya e-posta ara..." /></div>
+        <div class="col-md-3 d-grid"><button class="btn btn-dark-wood">Ara</button></div>
+    </div>
+</form>
+
+<div class="wood-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>Ad Soyad</th><th>E-posta</th><th>Telefon</th><th>Rol</th><th>Kayıt</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var u in Model.Items)
+                {
+                    var canManage = isAdmin || u.Role == Roles.Customer;
+                    var canDelete = u.Id != myId && canManage;
+                    <tr>
+                        <td class="fw-semibold">@u.FullName</td>
+                        <td>@u.Email</td>
+                        <td>@(u.Phone ?? "-")</td>
+                        <td><span class="badge @(u.Role == Roles.Admin ? "text-bg-dark" : u.Role == Roles.Manager ? "text-bg-warning" : "text-bg-light border")">@Roles.DisplayName(u.Role)</span></td>
+                        <td class="small text-nowrap">@u.CreatedAt.ToTrString()</td>
+                        <td class="text-end text-nowrap">
+                            @if (canManage)
+                            {
+                                <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-outline-wood">Düzenle</a>
+                                <a asp-action="ResetPassword" asp-route-id="@u.Id" class="btn btn-sm btn-outline-secondary">Şifre</a>
+                            }
+                            @if (canDelete)
+                            {
+                                <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline" data-confirm="@(u.FullName + " silinsin mi? Kullanıcının tüm talepleri de silinir.")">
+                                    <button class="btn btn-sm btn-outline-danger">Sil</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Items.Any()) { <tr><td colspan="6" class="text-center text-muted py-4">Kullanıcı bulunamadı.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>
+<partial name="_Pager" model="(Model.Page, Model.TotalPages, (Func<int, string?>)PageUrl)" />

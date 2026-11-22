@@ -1,0 +1,45 @@
+@model UserEditViewModel
+@{
+    ViewData["Title"] = "Kullanıcıyı Düzenle";
+    var canChangeRole = User.IsInRole(Roles.Admin) && Model.Id != User.GetUserId();
+}
+<h1 class="mb-3">Kullanıcıyı Düzenle</h1>
+<div class="wood-card p-4" style="max-width: 600px">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label class="form-label">E-posta</label>
+            <input class="form-control" value="@Model.Email" disabled />
+        </div>
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Phone" class="form-label"></label>
+            <input asp-for="Phone" class="form-control" type="tel" inputmode="tel" maxlength="20" placeholder="05XX XXX XX XX" />
+            <span asp-validation-for="Phone" class="text-danger small"></span>
+        </div>
+        <div class="mb-4">
+            <label asp-for="Role" class="form-label"></label>
+            @if (canChangeRole)
+            {
+                <select asp-for="Role" class="form-select">
+                    <option value="@Roles.Customer">Müşteri</option>
+                    <option value="@Roles.Manager">Yönetici</option>
+                    <option value="@Roles.Admin">Admin</option>
+                </select>
+            }
+            else
+            {
+                <input class="form-control" value="@Roles.DisplayName(Model.Role)" disabled />
+                <div class="form-text">Rolü yalnızca Admin değiştirebilir; kendi rolünüzü değiştiremezsiniz.</div>
+            }
+            <span asp-validation-for="Role" class="text-danger small"></span>
+        </div>
+        <button class="btn btn-wood" type="submit">Kaydet</button>
+        <a asp-action="Index" class="btn btn-outline-wood">Vazgeç</a>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

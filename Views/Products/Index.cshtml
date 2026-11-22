@@ -1,0 +1,60 @@
+@model ProductListViewModel
+@{
+    ViewData["Title"] = "Ürünler";
+    string? PageUrl(int p) => Url.Action("Index", "Products", new { q = Model.Query, categoryId = Model.CategoryId, sort = Model.Sort, page = p });
+}
+
+<div class="container py-4">
+    <h1 class="mb-4">Ürünlerimiz</h1>
+
+    <form method="get" asp-action="Index" class="wood-card p-3 mb-4">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small mb-1" for="q">Arama</label>
+                <input class="form-control" id="q" name="q" value="@Model.Query" placeholder="Ürün adı, ahşap türü, açıklama..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small mb-1" for="categoryId">Kategori</label>
+                <select class="form-select" id="categoryId" name="categoryId">
+                    <option value="">Tümü</option>
+                    @foreach (var c in Model.Categories)
+                    {
+                        <option value="@c.Id" selected="@(Model.CategoryId == c.Id)">@c.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small mb-1" for="sort">Sırala</label>
+                <select class="form-select" id="sort" name="sort">
+                    <option value="new" selected="@(Model.Sort == "new")">En yeni</option>
+                    <option value="name" selected="@(Model.Sort == "name")">Ada göre</option>
+                    <option value="price_asc" selected="@(Model.Sort == "price_asc")">Fiyat ↑</option>
+                    <option value="price_desc" selected="@(Model.Sort == "price_desc")">Fiyat ↓</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button class="btn btn-dark-wood" type="submit">Filtrele</button>
+            </div>
+        </div>
+    </form>
+
+    <p class="text-muted">@Model.TotalCount ürün bulundu.</p>
+
+    <div class="row g-4">
+        @foreach (var p in Model.Items)
+        {
+            <div class="col-12 col-sm-6 col-lg-4"><partial name="_ProductCard" model="p" /></div>
+        }
+    </div>
+
+    @if (!Model.Items.Any())
+    {
+        <div class="wood-card p-5 text-center">
+            <h4>Aradığınızı bulamadık</h4>
+            <p class="text-muted">Farklı bir arama deneyebilir veya size özel üretim için teklif isteyebilirsiniz.</p>
+            <a asp-controller="Quotes" asp-action="Create" class="btn btn-wood">Özel Ölçü Teklifi İste</a>
+        </div>
+    }
+
+    <partial name="_Pager" model="(Model.Page, Model.TotalPages, (Func<int, string?>)PageUrl)" />
+</div>

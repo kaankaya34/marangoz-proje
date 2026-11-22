@@ -1,0 +1,35 @@
+@model List<Category>
+@{
+    ViewData["Title"] = "Kategoriler";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Kategoriler</h1>
+    <a asp-action="Create" class="btn btn-wood">+ Yeni Kategori</a>
+</div>
+<div class="wood-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>Ad</th><th>Açıklama</th><th>Ürün</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@c.Name</td>
+                        <td class="text-muted">@c.Description</td>
+                        <td>@c.Products.Count</td>
+                        <td class="text-end text-nowrap">
+                            <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-wood">Düzenle</a>
+                            @if (c.Products.Count == 0)
+                            {
+                                <form asp-action="Delete" asp-route-id="@c.Id" method="post" data-confirm="Kategori silinsin mi?" class="d-inline">
+                                    <button class="btn btn-sm btn-outline-danger">Sil</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="4" class="text-center text-muted py-4">Kategori yok. Masa, Sandalye, Tabure, Sallanan Sandalye gibi kategoriler ekleyin.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

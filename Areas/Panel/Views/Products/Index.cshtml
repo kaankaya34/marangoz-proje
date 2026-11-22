@@ -1,0 +1,60 @@
+@model PanelProductListViewModel
+@{
+    ViewData["Title"] = "Ürünler";
+    string? PageUrl(int p) => Url.Action("Index", "Products", new { area = "Panel", q = Model.Query, categoryId = Model.CategoryId, page = p });
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Ürünler <span class="fs-6 text-muted">(@Model.TotalCount)</span></h1>
+    <a asp-action="Create" class="btn btn-wood">+ Yeni Ürün</a>
+</div>
+
+<form method="get" class="wood-card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-6"><input class="form-control" name="q" value="@Model.Query" placeholder="Ürün adı veya ahşap türü ara..." /></div>
+        <div class="col-md-3">
+            <select class="form-select" name="categoryId">
+                <option value="">Tüm kategoriler</option>
+                @foreach (var c in Model.Categories)
+                {
+                    <option value="@c.Id" selected="@(Model.CategoryId == c.Id)">@c.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-grid"><button class="btn btn-dark-wood">Filtrele</button></div>
+    </div>
+</form>
+
+<div class="wood-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead><tr><th></th><th>Ürün</th><th>Kategori</th><th>Fiyat</th><th>Ekleyen</th><th>Durum</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var p in Model.Items)
+                {
+                    <tr>
+                        <td style="width:64px">
+                            @if (!string.IsNullOrEmpty(p.ImageUrl)) { <img src="@p.ImageUrl" alt="" style="width:56px;height:42px;object-fit:cover;border-radius:6px" /> }
+                            else { <span class="fs-4">🪑</span> }
+                        </td>
+                        <td class="fw-semibold">@p.Name</td>
+                        <td>@p.Category?.Name</td>
+                        <td>@(p.Price.HasValue ? p.Price.Value.ToString("N0") + " ₺" : "-")</td>
+                        <td class="small">@(p.CreatedByUser?.FullName ?? "-")<div class="text-muted">@p.CreatedAt.ToTrString()</div></td>
+                        <td>@if (p.IsActive) { <span class="badge text-bg-success">Yayında</span> } else { <span class="badge text-bg-secondary">Gizli</span> }</td>
+                        <td class="text-end text-nowrap">
+                            <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-wood">Düzenle</a>
+                            <form asp-action="Toggle" asp-route-id="@p.Id" method="post" class="d-inline">
+                                <button class="btn btn-sm btn-outline-secondary">@(p.IsActive ? "Gizle" : "Yayınla")</button>
+                            </form>
+                            <form asp-action="Delete" asp-route-id="@p.Id" method="post" class="d-inline" data-confirm="@($"'{p.Name}' kalıcı olarak silinsin mi? Bu işlem geri alınamaz.")">
+                                <button class="btn btn-sm btn-outline-danger">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Items.Any()) { <tr><td colspan="7" class="text-center text-muted py-4">Ürün bulunamadı.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>
+<partial name="_Pager" model="(Model.Page, Model.TotalPages, (Func<int, string?>)PageUrl)" />

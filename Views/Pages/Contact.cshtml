@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "İletişim";
+    var site = SiteOpt.Value;
+    var isAuth = User.Identity?.IsAuthenticated == true;
+    var waDigits = site.WhatsAppDigits;
+}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-3">İletişim</h1>
+            <div class="wood-card p-4 p-md-5">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Adres</dt><dd class="col-sm-8">@site.Address</dd>
+                    <dt class="col-sm-4">E-posta</dt><dd class="col-sm-8"><a href="mailto:@site.Email">@site.Email</a></dd>
+                    @if (!string.IsNullOrWhiteSpace(site.WorkingHours))
+                    {
+                        <dt class="col-sm-4">Çalışma Saatleri</dt><dd class="col-sm-8">@site.WorkingHours</dd>
+                    }
+                    <dt class="col-sm-4">Telefon</dt>
+                    <dd class="col-sm-8">
+                        @if (isAuth)
+                        {
+                            <a href="tel:@(site.OrderPhone.Replace(" ", ""))">@site.OrderPhone</a>
+                            @if (waDigits is not null)
+                            {
+                                <a class="btn btn-sm btn-outline-wood ms-2" href="https://wa.me/@waDigits" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                            }
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Giriş yapınca görünür</a>
+                        }
+                    </dd>
+                    @if (!string.IsNullOrWhiteSpace(site.Instagram))
+                    {
+                        <dt class="col-sm-4">Instagram</dt><dd class="col-sm-8"><a href="@site.Instagram" target="_blank" rel="noopener noreferrer">@site.Instagram</a></dd>
+                    }
+                </dl>
+                <div class="mt-4 d-flex gap-2 flex-wrap">
+                    @if (!string.IsNullOrWhiteSpace(site.MapUrl))
+                    {
+                        <a class="btn btn-outline-wood" href="@site.MapUrl" target="_blank" rel="noopener noreferrer">Haritada Aç</a>
+                    }
+                    <a asp-controller="Quotes" asp-action="Create" class="btn btn-wood">Teklif Formu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

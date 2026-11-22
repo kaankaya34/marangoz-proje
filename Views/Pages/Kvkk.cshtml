@@ -1,0 +1,23 @@
+@{
+    ViewData["Title"] = "KVKK Aydınlatma Metni";
+    var site = SiteOpt.Value;
+}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-3">KVKK Aydınlatma Metni</h1>
+            <div class="wood-card p-4 p-md-5">
+                <p>6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında, veri sorumlusu <strong>@site.Name</strong> olarak kişisel verilerinizi aşağıda açıklanan çerçevede işleriz.</p>
+                <h5>İşlenen veriler</h5>
+                <p>Ad soyad, e-posta, telefon, teklif taleplerinizde paylaştığınız açıklama, ölçü ve fotoğraflar ile oturum ve işlem kayıtları.</p>
+                <h5>İşleme amaçları</h5>
+                <p>Üyelik oluşturma, teklif ve sipariş süreçlerinin yürütülmesi, sizinle iletişim kurulması, hesap güvenliğinin sağlanması ve yasal yükümlülüklerin yerine getirilmesi.</p>
+                <h5>Saklama ve aktarım</h5>
+                <p>Verileriniz süreç için gerekli süre boyunca saklanır; yasal zorunluluklar dışında üçüncü kişilerle paylaşılmaz.</p>
+                <h5>Haklarınız</h5>
+                <p>KVKK madde 11 uyarınca verilerinize erişme, düzeltme, silme ve işlemeye itiraz etme haklarına sahipsiniz. Başvuru için <a href="mailto:@site.Email">@site.Email</a> adresine yazabilirsiniz.</p>
+                <p class="small text-muted mb-0">Bu metin genel bir şablondur; yayına almadan önce hukuki danışmanınızla gözden geçirmeniz önerilir.</p>
+            </div>
+        </div>
+    </div>
+</div>

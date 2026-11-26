@@ -17,6 +17,7 @@ public class RegisterViewModel
     public string? Phone { get; set; }
 
     [Required(ErrorMessage = "Şifre zorunludur."), StringLength(100, MinimumLength = 8, ErrorMessage = "Şifre en az 8 karakter olmalıdır.")]
+    [PasswordStrength]
     [DataType(DataType.Password)]
     [Display(Name = "Şifre")]
     public string Password { get; set; } = "";
@@ -49,6 +50,7 @@ public class ChangePasswordViewModel
     public string CurrentPassword { get; set; } = "";
 
     [Required(ErrorMessage = "Yeni şifre zorunludur."), StringLength(100, MinimumLength = 8, ErrorMessage = "Şifre en az 8 karakter olmalıdır.")]
+    [PasswordStrength]
     [DataType(DataType.Password)]
     [Display(Name = "Yeni Şifre")]
     public string NewPassword { get; set; } = "";
@@ -195,6 +197,7 @@ public class PasswordResetViewModel
     public string FullName { get; set; } = "";
 
     [Required(ErrorMessage = "Yeni şifre zorunludur."), StringLength(100, MinimumLength = 8, ErrorMessage = "Şifre en az 8 karakter olmalıdır.")]
+    [PasswordStrength]
     [DataType(DataType.Password)]
     [Display(Name = "Yeni Şifre")]
     public string NewPassword { get; set; } = "";
@@ -267,6 +270,7 @@ public class UserCreateViewModel
     public string? Phone { get; set; }
 
     [Required(ErrorMessage = "Şifre zorunludur."), StringLength(100, MinimumLength = 8, ErrorMessage = "Şifre en az 8 karakter olmalıdır.")]
+    [PasswordStrength]
     [DataType(DataType.Password)]
     [Display(Name = "Şifre")]
     public string Password { get; set; } = "";

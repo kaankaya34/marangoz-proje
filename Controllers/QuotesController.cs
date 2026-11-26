@@ -62,7 +62,7 @@ public class QuotesController : Controller
         {
             foreach (var file in files)
             {
-                var (url, error) = await _images.SaveImageAsync(file);
+                var (url, error) = await _images.SaveImageAsync(file, isPrivate: true);
                 if (error is not null) { ModelState.AddModelError(nameof(model.Attachments), error); break; }
                 savedUrls.Add(url!);
             }

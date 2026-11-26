@@ -1,3 +1,13 @@
+# RESET ETME
+
+# Temizleme ve yeniden yayınlama
+rm -rf bin obj web.Tests/bin web.Tests/obj 
+dotnet clean
+dotnet publish -c Release -o ~/ysmsandalye-yayin
+sudo systemctl restart ysmsandalye
+# Durum kontrolü
+sudo systemctl status ysmsandalye --no-pager -l
+
 # Sunucu Rehberi
 
 Site: https://ysmsandalye.com.tr
@@ -46,7 +56,7 @@ mysqldump -u ysm_app -p ysmsandalye > ~/ysmsandalye-yedek.sql      # alma
 mysql -u ysm_app -p ysmsandalye < ~/ysmsandalye-yedek.sql          # geri yükleme
 ```
 
-Ürün görselleri veritabanında değil, `~/ysmsandalye-yayin/wwwroot/uploads` altında. Onu da yedekle.
+Ürün görselleri veritabanında değil, `~/ysmsandalye-yayin/wwwroot/uploads` altında. Müşteri fotoğrafları (teklif ekleri) `~/ysmsandalye-yayin/App_Data/private-uploads` altında, oturum şifreleme anahtarları `App_Data/keys` altında. Üçünü de yedekle; `App_Data` publish'te silinmez.
 
 ## Log
 
@@ -59,7 +69,9 @@ journalctl -u ysmsandalye -f                   # canlı izle
 
 ```bash
 cd ~/ysmsandalye-web
-git pull
+
+git pull // mecbur değil
+
 export PATH=$PATH:$HOME/.dotnet
 dotnet publish -c Release -o ~/ysmsandalye-yayin
 sudo systemctl restart ysmsandalye

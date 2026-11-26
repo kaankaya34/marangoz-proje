@@ -88,7 +88,7 @@ public class AccountController : Controller
 
         if (!ok)
         {
-            _cache.Set(failKey, fails + 1, LockoutWindow);
+            _cache.Set(failKey, fails + 1, new MemoryCacheEntryOptions { Size = 1, AbsoluteExpirationRelativeToNow = LockoutWindow });
             ModelState.AddModelError("", "E-posta veya şifre hatalı.");
             return View(model);
         }

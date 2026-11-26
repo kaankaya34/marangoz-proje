@@ -48,3 +48,13 @@ public class TurkishPhoneAttribute : ValidationAttribute, IClientModelValidator
     private static void Merge(IDictionary<string, string> attrs, string key, string value)
         => attrs.TryAdd(key, value);
 }
+
+// En az bir harf ve bir rakam; uzunluk ayrıca StringLength ile denetlenir.
+[AttributeUsage(AttributeTargets.Property)]
+public class PasswordStrengthAttribute : ValidationAttribute
+{
+    public PasswordStrengthAttribute() => ErrorMessage = "Şifre en az bir harf ve bir rakam içermelidir.";
+
+    public override bool IsValid(object? value)
+        => value is not string s || s.Length == 0 || (s.Any(char.IsLetter) && s.Any(char.IsDigit));
+}

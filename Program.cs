@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,24 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
 
+// Antiforgery çerezi üretimde yalnızca HTTPS ile gönderilir (Cloudflare arkasında X-Forwarded-Proto ile HTTPS algılanır).
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
+});
+
+// Şifreleme anahtarları diskte saklanır; yeniden başlatma/yayın sonrası oturum ve antiforgery çerezleri geçersiz kalmaz.
+var keysPath = builder.Configuration["DataProtection:KeysPath"] ?? Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys");
+builder.Services.AddDataProtection()
+    .SetApplicationName("ysmsandalye")
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath));
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddMemoryCache();
+// Her kayıt Size=1 ile eklenir; rastgele e-posta denemeleriyle bellek şişirilemez.
+builder.Services.AddMemoryCache(options => options.SizeLimit = 10_000);
 builder.Services.Configure<SiteOptions>(builder.Configuration.GetSection("Site"));
 builder.Services.AddSingleton<ISiteSettings, SiteSettingsProvider>();
 builder.Services.AddSingleton<IPasswordService, PasswordService>();
@@ -76,17 +90,53 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("ManagerOrAdmin", p => p.RequireRole(web.Models.Roles.Manager, web.Models.Roles.Admin))
     .AddPolicy("AdminOnly", p => p.RequireRole(web.Models.Roles.Admin));
 
-// Cloudflare Tunnel (cloudflared) aynı makineden HTTP ile bağlanır; HTTPS bilgisi X-Forwarded-* başlıklarıyla gelir.
+// Cloudflare Tunnel (cloudflared) aynı makineden (loopback) HTTP ile bağlanır. Yalnızca loopback'ten gelen başlıklara güvenilir,
+// böylece istemci X-Forwarded-* başlığını taklit edemez. Gerçek istemci IP'si Cloudflare'ın CF-Connecting-IP başlığından okunur
+// (hız sınırı ve giriş kilidi her ziyaretçiyi ayrı sayar). Başka bir ters vekil de güvenilecekse IP'leri ForwardedHeaders:KnownProxies altında verilebilir.
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownIPNetworks.Clear();
-    options.KnownProxies.Clear();
+    options.ForwardedForHeaderName = "CF-Connecting-IP";
+    foreach (var proxy in builder.Configuration.GetSection("ForwardedHeaders:KnownProxies").Get<string[]>() ?? Array.Empty<string>())
+    {
+        if (System.Net.IPAddress.TryParse(proxy, out var ip)) options.KnownProxies.Add(ip);
+    }
 });
 
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+
+// Güvenlik başlıkları. CSP'de satır içi betikler yalnızca istek başına üretilen nonce ile çalışır.
+app.Use(async (ctx, next) =>
+{
+    var nonce = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(16));
+    ctx.Items["csp-nonce"] = nonce;
+
+    ctx.Response.OnStarting(() =>
+    {
+        var h = ctx.Response.Headers;
+        h["X-Content-Type-Options"] = "nosniff";
+        h["X-Frame-Options"] = "DENY";
+        h["Referrer-Policy"] = "strict-origin-when-cross-origin";
+        h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
+        if (!app.Environment.IsDevelopment())
+        {
+            // Cloudflare Web Analytics betiği (static.cloudflareinsights.com) etkinse çalışabilsin diye izinlidir.
+            h["Content-Security-Policy"] =
+                "default-src 'self'; " +
+                $"script-src 'self' 'nonce-{nonce}' https://static.cloudflareinsights.com; " +
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+                "font-src 'self' https://fonts.gstatic.com; " +
+                "img-src 'self' data:; " +
+                "connect-src 'self' https://cloudflareinsights.com; " +
+                "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+        }
+        return Task.CompletedTask;
+    });
+
+    await next();
+});
 
 if (!app.Environment.IsDevelopment())
 {

@@ -149,7 +149,7 @@ public class QuotesController : PanelControllerBase
         string? imageUrl = null;
         if (model.Image is { Length: > 0 })
         {
-            var (url, error) = await _images.SaveImageAsync(model.Image);
+            var (url, error) = await _images.SaveImageAsync(model.Image, isPrivate: true);
             if (error is not null)
             {
                 TempData["Error"] = error;

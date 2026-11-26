@@ -79,7 +79,7 @@
 </div>
 
 @section Scripts {
-    <script>
+    <script nonce="@Context.Items["csp-nonce"]">
         // #tab-info / #tab-quotes bağlantılarıyla ilgili sekmeyi aç.
         (function () {
             var btn = location.hash && document.querySelector('[data-bs-target="' + location.hash + '"]');

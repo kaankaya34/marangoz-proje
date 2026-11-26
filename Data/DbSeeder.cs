@@ -19,6 +19,7 @@ public static class DbSeeder
             var hasher = scope.ServiceProvider.GetRequiredService<IPasswordService>();
 
             await SeedSampleProductsAsync(db);
+            await MoveQuoteFilesToPrivateAsync(db, scope.ServiceProvider.GetRequiredService<IImageStorage>(), logger);
 
             if (await db.Users.AnyAsync(u => u.Role == Roles.Admin)) return;
 
@@ -44,6 +45,28 @@ public static class DbSeeder
         {
             logger.LogError(ex, "Veritabanı başlangıç verisi oluşturulamadı. db.md içindeki SQL betiğinin çalıştırıldığından emin olun.");
         }
+    }
+
+    // Eski sürümde herkese açık /uploads/ altına yazılmış teklif fotoğraflarını özel klasöre taşır (yoksa hiçbir şey yapmaz).
+    private static async Task MoveQuoteFilesToPrivateAsync(AppDbContext db, IImageStorage images, ILogger logger)
+    {
+        var attachments = await db.QuoteAttachments.Where(a => a.Url.StartsWith("/uploads/")).ToListAsync();
+        var history = await db.QuoteStatusHistories.Where(h => h.ImageUrl != null && h.ImageUrl.StartsWith("/uploads/")).ToListAsync();
+        if (attachments.Count == 0 && history.Count == 0) return;
+
+        var moved = 0;
+        foreach (var a in attachments)
+        {
+            var url = images.MoveToPrivate(a.Url);
+            if (url is not null) { a.Url = url; moved++; }
+        }
+        foreach (var h in history)
+        {
+            var url = images.MoveToPrivate(h.ImageUrl!);
+            if (url is not null) { h.ImageUrl = url; moved++; }
+        }
+        await db.SaveChangesAsync();
+        logger.LogInformation("{Count} teklif görseli özel klasöre taşındı.", moved);
     }
 
     // Vitrin boş görünmesin diye, hiç ürün yoksa örnek ürünleri (wwwroot/img/samples görselleriyle) ekler. Panelden silinebilir.

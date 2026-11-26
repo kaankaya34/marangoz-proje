@@ -45,6 +45,7 @@ public class SiteSettingsProvider : ISiteSettings
 
     public SiteOptions Value => _cache.GetOrCreate(CacheKey, entry =>
     {
+        entry.Size = 1;
         entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
         try
         {

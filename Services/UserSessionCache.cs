@@ -28,6 +28,7 @@ public class UserSessionCache : IUserSessionCache
         // Boş string: kullanıcı silinmiş.
         var current = await _cache.GetOrCreateAsync(Key(userId), async entry =>
         {
+            entry.Size = 1;
             entry.AbsoluteExpirationRelativeToNow = Ttl;
             return await _db.Users.Where(u => u.Id == userId).Select(u => u.Role).FirstOrDefaultAsync() ?? "";
         });

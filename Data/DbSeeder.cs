@@ -12,6 +12,17 @@ public static class DbSeeder
     {
         using var scope = services.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<AppDbContext>>();
+
+        // Örnek veri/admin oluşturma başarısız olsa bile müşteri dosyalarının gizlenmesi denenir.
+        try
+        {
+            await MoveQuoteFilesToPrivateAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>(), scope.ServiceProvider.GetRequiredService<IImageStorage>(), logger);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Teklif görselleri özel klasöre taşınamadı.");
+        }
+
         try
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -19,7 +30,6 @@ public static class DbSeeder
             var hasher = scope.ServiceProvider.GetRequiredService<IPasswordService>();
 
             await SeedSampleProductsAsync(db);
-            await MoveQuoteFilesToPrivateAsync(db, scope.ServiceProvider.GetRequiredService<IImageStorage>(), logger);
 
             if (await db.Users.AnyAsync(u => u.Role == Roles.Admin)) return;
 
@@ -47,14 +57,17 @@ public static class DbSeeder
         }
     }
 
-    // Eski sürümde herkese açık /uploads/ altına yazılmış teklif fotoğraflarını özel klasöre taşır (yoksa hiçbir şey yapmaz).
+    // Teklif görselleri herkese açık wwwroot/uploads altında kalmamalıdır: veritabanında teklif ekine bağlı olanlar ve
+    // hiçbir ürüne bağlı olmayan (sahipsiz) dosyalar özel klasöre taşınır. Yalnızca ürün görselleri herkese açık kalır.
     private static async Task MoveQuoteFilesToPrivateAsync(AppDbContext db, IImageStorage images, ILogger logger)
     {
-        var attachments = await db.QuoteAttachments.Where(a => a.Url.StartsWith("/uploads/")).ToListAsync();
-        var history = await db.QuoteStatusHistories.Where(h => h.ImageUrl != null && h.ImageUrl.StartsWith("/uploads/")).ToListAsync();
-        if (attachments.Count == 0 && history.Count == 0) return;
+        // Boş/yanlış bir veritabanına bağlanıldığında ürün görselleri yanlışlıkla taşınmasın.
+        if (!await db.Users.AnyAsync()) return;
 
         var moved = 0;
+
+        var attachments = await db.QuoteAttachments.Where(a => a.Url.StartsWith("/uploads/")).ToListAsync();
+        var history = await db.QuoteStatusHistories.Where(h => h.ImageUrl != null && h.ImageUrl.StartsWith("/uploads/")).ToListAsync();
         foreach (var a in attachments)
         {
             var url = images.MoveToPrivate(a.Url);
@@ -66,7 +79,17 @@ public static class DbSeeder
             if (url is not null) { h.ImageUrl = url; moved++; }
         }
         await db.SaveChangesAsync();
-        logger.LogInformation("{Count} teklif görseli özel klasöre taşındı.", moved);
+
+        var productUrls = (await db.Products.Where(p => p.ImageUrl != null).Select(p => p.ImageUrl!).ToListAsync())
+            .Concat(await db.ProductImages.Select(i => i.Url).ToListAsync())
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var url in images.ListPublicUploads())
+        {
+            if (productUrls.Contains(url)) continue;
+            if (images.MoveToPrivate(url) is not null) moved++;
+        }
+
+        if (moved > 0) logger.LogInformation("{Count} teklif/sahipsiz görsel herkese açık klasörden özel klasöre taşındı.", moved);
     }
 
     // Vitrin boş görünmesin diye, hiç ürün yoksa örnek ürünleri (wwwroot/img/samples görselleriyle) ekler. Panelden silinebilir.

@@ -108,7 +108,7 @@
                     <div class="small text-muted mt-2">Bu değerler tahminidir; kesin teklif ve süre keşif sonrası bildirilir.</div>
                 </div>
             }
-            @if (Model.UserId == User.GetUserId() && Model.Status == QuoteStatus.Pending)
+            @if (Model.UserId == User.GetUserId() && Model.Status == QuoteStatus.Pending && Model.CustomerResponse != CustomerResponse.Approved)
             {
                 <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="mt-3" data-confirm="Talebi iptal etmek istediğinize emin misiniz?">
                     <button type="submit" class="btn btn-outline-danger w-100">Talebi İptal Et</button>

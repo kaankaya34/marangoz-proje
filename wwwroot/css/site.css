@@ -246,10 +246,11 @@ body > header { position: sticky; top: 0; z-index: 1030; }
 .panel-side .list-group-item.active { background: var(--wood-dark); color: var(--cream); }
 .panel-main { flex: 1; min-width: 0; }
 @media (max-width: 991px) {
-    .panel-wrap { flex-direction: column; }
+    .panel-wrap { flex-direction: column; align-items: stretch; }
     .panel-side { width: 100%; position: static; }
 }
 .stat-card { padding: 1.1rem 1.25rem; }
+.stat-card .status-badge { white-space: normal; max-width: 100%; border-radius: 1rem; }
 .stat-card .num { font-size: 1.9rem; font-weight: 700; font-family: 'Playfair Display', serif; }
 .table > :not(caption) > * > * { background-color: transparent; }
 .table thead th { color: var(--wood-muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; border-bottom-width: 2px; }

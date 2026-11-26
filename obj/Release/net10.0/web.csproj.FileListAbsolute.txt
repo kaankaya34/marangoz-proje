@@ -127,7 +127,7 @@
 /home/kaan/ysmsandalye-web/obj/Release/net10.0/rjsmrazor.dswa.cache.json
 /home/kaan/ysmsandalye-web/obj/Release/net10.0/rjsmcshtml.dswa.cache.json
 /home/kaan/ysmsandalye-web/obj/Release/net10.0/scopedcss/bundle/web.styles.css
-/home/kaan/ysmsandalye-web/obj/Release/net10.0/compressed/uze0xjq161-{0}-fige6hk256-fige6hk256.gz
+/home/kaan/ysmsandalye-web/obj/Release/net10.0/compressed/uze0xjq161-{0}-4wxzmhaaav-4wxzmhaaav.gz
 /home/kaan/ysmsandalye-web/obj/Release/net10.0/compressed/xl7fadxo6i-{0}-6woe2hmqs6-6woe2hmqs6.gz
 /home/kaan/ysmsandalye-web/obj/Release/net10.0/compressed/ln383bpx7f-{0}-nz4d2mbd5x-nz4d2mbd5x.gz
 /home/kaan/ysmsandalye-web/obj/Release/net10.0/compressed/ypzyp62wmc-{0}-ifg395fn8m-ifg395fn8m.gz

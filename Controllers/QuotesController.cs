@@ -175,9 +175,11 @@ public class QuotesController : Controller
         var quote = await _db.QuoteRequests.FirstOrDefaultAsync(q => q.Id == id && q.UserId == userId);
         if (quote is null) return NotFound();
 
-        if (quote.Status != QuoteStatus.Pending)
+        if (quote.Status != QuoteStatus.Pending || quote.CustomerResponse == CustomerResponse.Approved)
         {
-            TempData["Error"] = "Yalnızca inceleme aşamasındaki talepler iptal edilebilir.";
+            TempData["Error"] = quote.CustomerResponse == CustomerResponse.Approved
+                ? "Onayladığınız teklif iptal edilemez. Değişiklik için atölyeyle iletişime geçin."
+                : "Yalnızca inceleme aşamasındaki talepler iptal edilebilir.";
             return RedirectToAction(nameof(Details), new { id });
         }
 

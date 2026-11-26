@@ -10,6 +10,8 @@ public interface IImageStorage
     string? GetPrivatePath(string name);
     // Herkese açık /uploads/ dosyasını özel klasöre taşır, yeni /files/ adresini döner; dosya yoksa null.
     string? MoveToPrivate(string publicUrl);
+    // wwwroot/uploads altındaki dosyaların herkese açık adresleri.
+    IReadOnlyList<string> ListPublicUploads();
 }
 
 public class ImageStorage : IImageStorage
@@ -47,6 +49,13 @@ public class ImageStorage : IImageStorage
     }
 
     public string PrivateDirectory => Path.Combine(_env.ContentRootPath, "App_Data", "private-uploads");
+
+    public IReadOnlyList<string> ListPublicUploads()
+    {
+        var dir = Path.Combine(_env.WebRootPath, UploadFolder);
+        if (!Directory.Exists(dir)) return Array.Empty<string>();
+        return Directory.EnumerateFiles(dir).Select(f => $"/{UploadFolder}/{Path.GetFileName(f)}").ToList();
+    }
 
     public string? MoveToPrivate(string publicUrl)
     {

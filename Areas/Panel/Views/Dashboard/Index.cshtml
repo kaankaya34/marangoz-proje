@@ -14,7 +14,7 @@
 <div class="row g-3 mb-4">
     @foreach (var kv in Model.QuoteCounts)
     {
-        <div class="col-6 col-md-4 col-xl-2">
+        <div class="col-6 col-md-4">
             <a asp-controller="Quotes" asp-action="Index" asp-route-status="@kv.Key" class="wood-card stat-card d-block text-decoration-none">
                 <span class="status-badge @kv.Key.CssClass() mb-2">@kv.Key.Icon() @kv.Key.Label()</span>
                 <div class="num text-dark">@kv.Value</div>

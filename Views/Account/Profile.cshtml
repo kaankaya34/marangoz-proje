@@ -77,3 +77,13 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // #tab-info / #tab-quotes bağlantılarıyla ilgili sekmeyi aç.
+        (function () {
+            var btn = location.hash && document.querySelector('[data-bs-target="' + location.hash + '"]');
+            if (btn && window.bootstrap) { window.bootstrap.Tab.getOrCreateInstance(btn).show(); }
+        })();
+    </script>
+}

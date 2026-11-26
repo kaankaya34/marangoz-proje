@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ builder.Services.AddControllersWithViews(options =>
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
@@ -75,13 +76,25 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("ManagerOrAdmin", p => p.RequireRole(web.Models.Roles.Manager, web.Models.Roles.Admin))
     .AddPolicy("AdminOnly", p => p.RequireRole(web.Models.Roles.Admin));
 
+// Cloudflare Tunnel (cloudflared) aynı makineden HTTP ile bağlanır; HTTPS bilgisi X-Forwarded-* başlıklarıyla gelir.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithReExecute("/Home/StatusCode", "?code={0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // Çalışma zamanında yüklenen ürün görselleri (wwwroot/uploads) için gerekli

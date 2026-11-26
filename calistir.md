@@ -38,6 +38,10 @@ cd C:\Users\abdur\Desktop\web
 dotnet run --launch-profile http
 ```
 
+
+dotnet run --launch-profile http --urls http://0.0.0.0:5178
+
+
 Tarayıcıda açın: **http://localhost:5178**
 
 Visual Studio / VS Code kullanıyorsanız `F5` ile de başlatabilirsiniz (http profilini seçin).

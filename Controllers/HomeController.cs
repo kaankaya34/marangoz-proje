@@ -29,6 +29,15 @@ public class HomeController : Controller
         return View(vm);
     }
 
+    // UseStatusCodePagesWithReExecute buraya yönlendirir; orijinal durum kodu (404 vb.) korunur.
+    [Route("Home/StatusCode")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult StatusCodePage(int code = 404)
+    {
+        ViewBag.Code = code;
+        return View("NotFound");
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

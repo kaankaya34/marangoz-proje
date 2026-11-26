@@ -14,7 +14,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - @site.Name</title>
+    <title>@site.Name</title>
     <meta name="description" content="@ogDescription" />
     <meta property="og:type" content="@(ViewData["OgType"] ?? "website")" />
     <meta property="og:site_name" content="@site.Name" />
@@ -26,6 +26,8 @@
         <meta property="og:image" content="@ogImage" />
         <meta name="twitter:card" content="summary_large_image" />
     }
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" asp-append-version="true" />
+    <link rel="icon" href="~/favicon.ico" sizes="32x32" asp-append-version="true" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
@@ -71,22 +73,26 @@
     </div>
 
     <header>
-        <nav class="navbar navbar-expand-lg site-nav">
+        <nav class="navbar navbar-expand-xl site-nav">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><svg class="i brand-mark"><use href="#i-tree" /></svg> @site.Name</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Menüyü aç">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNav">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav me-auto mb-2 mb-xl-0">
                         <li class="nav-item"><a class="nav-link @(ctrl == "Home" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a></li>
                         <li class="nav-item"><a class="nav-link @(ctrl == "Products" ? "active" : "")" asp-area="" asp-controller="Products" asp-action="Index">Ürünler</a></li>
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Quotes" asp-action="Create">Teklif İste</a></li>
+                        @if (isAuth)
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Account" asp-action="Profile" asp-fragment="tab-quotes">Taleplerim</a></li>
+                        }
                         <li class="nav-item"><a class="nav-link @(ctrl == "Pages" ? "active" : "")" asp-area="" asp-controller="Pages" asp-action="About">Hakkımızda</a></li>
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Pages" asp-action="WoodGuide">Ahşap Rehberi</a></li>
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Pages" asp-action="Contact">İletişim</a></li>
                     </ul>
-                    <form class="d-flex me-lg-3 mb-2 mb-lg-0" asp-area="" asp-controller="Products" asp-action="Index" method="get" role="search">
+                    <form class="d-flex me-xl-3 mb-2 mb-xl-0" asp-area="" asp-controller="Products" asp-action="Index" method="get" role="search">
                         <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Ürün ara..." aria-label="Ara" />
                         <button class="btn btn-sm btn-dark-wood" type="submit">Ara</button>
                     </form>
@@ -96,7 +102,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><svg class="i"><use href="#i-user" /></svg> @User.Identity!.Name</a>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile">Profilim / Taleplerim</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile" asp-fragment="tab-info">Profilim</a></li>
                                     @if (isStaff)
                                     {
                                         <li><a class="dropdown-item" asp-area="Panel" asp-controller="Dashboard" asp-action="Index">Yönetim Paneli</a></li>
@@ -113,7 +119,7 @@
                         else
                         {
                             <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Giriş Yap</a></li>
-                            <li class="nav-item ms-lg-2"><a class="btn btn-wood btn-sm mt-1" asp-area="" asp-controller="Account" asp-action="Register">Kayıt Ol</a></li>
+                            <li class="nav-item ms-xl-2"><a class="btn btn-wood btn-sm mt-1" asp-area="" asp-controller="Account" asp-action="Register">Kayıt Ol</a></li>
                         }
                     </ul>
                 </div>
